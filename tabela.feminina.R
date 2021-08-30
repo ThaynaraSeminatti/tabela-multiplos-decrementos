@@ -387,3 +387,27 @@ tabua.s.outr$Tx<-(rev(cumsum(rev(tabua.s.outr$nLx))))
 ##Estimando a esperan?a de vida ex = Tx/lx
 tabua.s.outr$ex.n<-round(tabua.s.outr$Tx/tabua.s.outr$lx,digits=2)
 
+#tabelas 
+tabua.s.circ.fem<-tabua.s.circ
+tabua.s.exte.fem<-tabua.s.exte
+tabua.s.infec.fem<-tabua.s.infec
+tabua.s.neo.fem<-tabua.s.neo
+tabua.s.outr.fem<-tabua.s.outr
+
+tabua.feminina %>%
+  mutate(nMx=nMx*100) %>% 
+  gt() %>% 
+  fmt_number(columns = c(nMx,nax,nqx,npx,ex), decimals = 2) %>% 
+  fmt_number(columns = c(lx,ndx,nLx,Tx),decimals =0 ,use_seps = FALSE) %>% 
+  cols_label(idade=md("**Idade**"),mortes.t=md("**Total de mortes**"),
+             expos=md("**Pop. Residente**"),n=md("**n**"),
+             nMx=md("**nMx**"),nax=md('**nax**'),
+             nqx=md("**nqx**"),npx=md('**npx**'),lx=md("**lx**"),ndx=md("**ndx**"),
+             nLx=md("**nLx**"),Tx=md("**TX**"),ex=md("**Ex**")) %>% 
+  tab_header(title = md("**Tabua de vida Feminina**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  cols_align(align = "center") %>% 
+  tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
+  gtsave("tabua.feminina.png")
+
+
+

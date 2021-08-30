@@ -387,5 +387,60 @@ tabua.s.outr$Tx<-(rev(cumsum(rev(tabua.s.outr$nLx))))
 ##Estimando a esperan?a de vida ex = Tx/lx
 tabua.s.outr$ex.n<-round(tabua.s.outr$Tx/tabua.s.outr$lx,digits=2)
 
+#tabua masculina
+tabua.masculina %>%
+  mutate(nMx=nMx*100) %>% 
+  gt() %>% 
+  fmt_number(columns = c(nMx,nax,nqx,npx,ex), decimals = 2) %>% 
+  fmt_number(columns = c(lx,ndx,nLx,Tx),decimals =0 ,use_seps = FALSE) %>% 
+  cols_label(idade=md("**Idade**"),mortes.t=md("**Total de mortes**"),
+             expos=md("**Pop. Residente**"),n=md("**n**"),
+             nMx=md("**nMx**"),nax=md('**nax**'),
+             nqx=md("**nqx**"),npx=md('**npx**'),lx=md("**lx**"),ndx=md("**ndx**"),
+             nLx=md("**nLx**"),Tx=md("**TX**"),ex=md("**Ex**")) %>% 
+  tab_header(title = md("**Tabua de vida Masculina**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  cols_align(align = "center") %>% 
+  tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
+  gtsave("tabua.masclina.png")#para salvar
 
 
+#tabelas
+tabua.s.circ.masc<-tabua.s.circ
+tabua.s.exte.masc<-tabua.s.exte
+tabua.s.infec.masc<-tabua.s.infec
+tabua.s.neo.masc<-tabua.s.neo
+tabua.s.outr.masc<-tabua.s.outr
+
+experanças<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.feminina$ex,
+                       tabua.s.infec.masc$ex.n,tabua.s.infec.fem$ex.n,
+                       tabua.s.circ.masc$ex.n,tabua.s.circ.fem$ex.n,
+                       tabua.s.neo.masc$ex.n,tabua.s.neo.fem$ex.n,
+                       tabua.s.exte.masc$ex.n,tabua.s.exte.fem$ex.n,
+                       tabua.s.outr.masc$ex.n,tabua.s.outr.fem$ex.n)
+
+experanças %>% 
+  gt(rowname_col = "todos.dados..Faixa.Etária.") %>% 
+  tab_spanner(label = md("**Tabua normal**"),
+              columns =c(tabua.masculina.ex,tabua.feminina.ex) ) %>% 
+  tab_spanner(label = md("**Tabua Infecção**"),
+              columns = c(tabua.s.infec.masc.ex.n,tabua.s.infec.fem.ex.n)) %>% 
+  tab_spanner(label = md("**Apar. Circulatório**"),
+              columns = c(tabua.s.circ.masc.ex.n,tabua.s.circ.fem.ex.n)) %>% 
+  tab_spanner(label = md("**Causas Externas**"),
+              columns = c(tabua.s.exte.masc.ex.n,tabua.s.exte.fem.ex.n)) %>% 
+  tab_spanner(label = md("**Neoplasia**"),
+            columns = c(tabua.s.neo.masc.ex.n,tabua.s.neo.fem.ex.n)) %>% 
+  tab_spanner(label = md("**Outras**"),
+              columns = c(tabua.s.outr.masc.ex.n,tabua.s.outr.fem.ex.n)) %>% 
+  cols_label(tabua.masculina.ex="Masc",tabua.feminina.ex="Fem",
+             tabua.s.infec.masc.ex.n="Masc",tabua.s.infec.fem.ex.n="Fem",
+             tabua.s.circ.masc.ex.n="Masc",tabua.s.circ.fem.ex.n="Fem",
+             tabua.s.neo.masc.ex.n="Masc",tabua.s.neo.fem.ex.n="Fem",
+             tabua.s.exte.masc.ex.n="Masc",tabua.s.exte.fem.ex.n="Fem",
+             tabua.s.outr.masc.ex.n="Masc",tabua.s.outr.fem.ex.n="Fem") %>%  
+  tab_header(title = md("**Esperanças de vida comparadas**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  cols_align(align = "center") %>% 
+  tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>%
+  gtsave("esperanças.png")
+
+             
