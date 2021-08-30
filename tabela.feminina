@@ -4,7 +4,7 @@ library(gt)
 library(readxl)
 
 #carregando dados do RN, mortes por causa, mortes tot, pop residente----
-todos.dados<-read_xlsx("trabalho final.xlsx", sheet = "MASCULINO.R")
+todos.dados<-read_xlsx("trabalho final.xlsx", sheet = "FEMININO.R")
 
 #criando o intervalo
 n<-c(1,4,rep(5,10))
@@ -18,7 +18,7 @@ mortes.t<-todos.dados$total
 #pop resi
 expos<-todos.dados$pop.resi
 
-#tabua de vida masculina ----
+#tabua de vida feminina ----
 dados<-data.frame(idade, n, mortes.t,expos)
 
 ##Estimando as taxas espec?ficas de mortalidade, nMx, para todas as mortes
@@ -79,8 +79,8 @@ dados$Tx<-(rev(cumsum(rev(dados$nLx))))
 ##Estimando a esperan?a de vida ex = Tx/lx
 dados$ex<-round(dados$Tx/dados$lx,digits=2)
 
-tabua.masculina=dados
-tabua.masculina
+tabua.feminina=dados
+tabua.feminina
 
 ## Vamos estimar a esperanca de vida caso infecaco fosse eliminada nos homems
 #infecao----
@@ -92,7 +92,7 @@ p.no.infec
 tabua.s.infec=data.frame(cbind(idade,n,p.no.infec))
 
 ## Extraindo da probabilidade de sobrevivencia essa proporcao = px^proporcao
-tabua.s.infec$npx.n=tabua.masculina$npx^tabua.s.infec$p.no.infec
+tabua.s.infec$npx.n=tabua.feminina$npx^tabua.s.infec$p.no.infec
 
 ## Novo nqx = 1-npx
 tabua.s.infec$nqx.n=1-tabua.s.infec$npx.n
@@ -119,7 +119,7 @@ tabua.s.infec$ndx[12]<-tabua.s.infec$lx[12]
 
 ## Para os grupos de idade 0 a 9 e penultimo da tabua
 ## = n + p.sem.causa*(nqx/nqx.n)*(nax-n)
-tabua.s.infec$nax.n=tabua.s.infec$n+tabua.s.infec$p.no.infec*(tabua.masculina$nqx/tabua.s.infec$nqx.n)*(tabua.masculina$nax-tabua.s.infec$n)
+tabua.s.infec$nax.n=tabua.s.infec$n+tabua.s.infec$p.no.infec*(tabua.feminina$nqx/tabua.s.infec$nqx.n)*(tabua.feminina$nax-tabua.s.infec$n)
 
 ## Para os demais grupos com intervalo de 5 anos, assume-se que as mortes seguem uma funcao quadratica sobre os intervalos x-5 a x+10, assim:
 
@@ -127,7 +127,7 @@ tabua.s.infec$nax.n=tabua.s.infec$n+tabua.s.infec$p.no.infec*(tabua.masculina$nq
 for (i in 4:10){tabua.s.infec$nax.n[i]=((tabua.s.infec$ndx[i-1]*-5/24)+2.5*tabua.s.infec$ndx[i]+(tabua.s.infec$ndx[i+1]*5/24))/tabua.s.infec$ndx[i]}
 
 # para o ultimo grupo
-tabua.s.infec$nax.n[12]=tabua.masculina$ex[12]/tabua.s.infec$p.no.infec[12]
+tabua.s.infec$nax.n[12]=tabua.feminina$ex[12]/tabua.s.infec$p.no.infec[12]
 
 ## Estimando o pessoas-ano vivido da tabela de vida Lx
 ##Todos que viveram ate o fim do intervalo + aqueles que viveram certo tempo e morreram antes de completar a ultima idade do intervalo
@@ -153,7 +153,7 @@ p.no.neo
 tabua.s.neo=data.frame(cbind(idade,n,p.no.neo))
 
 ## Extraindo da probabilidade de sobrevivencia essa proporcao = px^proporcao
-tabua.s.neo$npx.n=tabua.masculina$npx^tabua.s.neo$p.no.neo
+tabua.s.neo$npx.n=tabua.feminina$npx^tabua.s.neo$p.no.neo
 
 ## Novo nqx = 1-npx
 tabua.s.neo$nqx.n=1-tabua.s.neo$npx.n
@@ -180,7 +180,7 @@ tabua.s.neo$ndx[12]<-tabua.s.neo$lx[12]
 
 ## Para os grupos de idade 0 a 9 e penultimo da tabua
 ## = n + p.sem.causa*(nqx/nqx.n)*(nax-n)
-tabua.s.neo$nax.n=tabua.s.neo$n+tabua.s.neo$p.no.neo*(tabua.masculina$nqx/tabua.s.neo$nqx.n)*(tabua.masculina$nax-tabua.s.neo$n)
+tabua.s.neo$nax.n=tabua.s.neo$n+tabua.s.neo$p.no.neo*(tabua.feminina$nqx/tabua.s.neo$nqx.n)*(tabua.feminina$nax-tabua.s.neo$n)
 
 ## Para os demais grupos com intervalo de 5 anos, assume-se que as mortes seguem uma funcao quadratica sobre os intervalos x-5 a x+10, assim:
 
@@ -188,7 +188,7 @@ tabua.s.neo$nax.n=tabua.s.neo$n+tabua.s.neo$p.no.neo*(tabua.masculina$nqx/tabua.
 for (i in 4:10){tabua.s.neo$nax.n[i]=((tabua.s.neo$ndx[i-1]*-5/24)+2.5*tabua.s.neo$ndx[i]+(tabua.s.neo$ndx[i+1]*5/24))/tabua.s.neo$ndx[i]}
 
 # para o ultimo grupo
-tabua.s.neo$nax.n[12]=tabua.masculina$ex[12]/tabua.s.neo$p.no.neo[12]
+tabua.s.neo$nax.n[12]=tabua.feminina$ex[12]/tabua.s.neo$p.no.neo[12]
 
 ## Estimando o pessoas-ano vivido da tabela de vida Lx
 ##Todos que viveram ate o fim do intervalo + aqueles que viveram certo tempo e morreram antes de completar a ultima idade do intervalo
@@ -213,7 +213,7 @@ p.no.circ
 tabua.s.circ=data.frame(cbind(idade,n,p.no.circ))
 
 ## Extraindo da probabilidade de sobrevivencia essa proporcao = px^proporcao
-tabua.s.circ$npx.n=tabua.masculina$npx^tabua.s.circ$p.no.circ
+tabua.s.circ$npx.n=tabua.feminina$npx^tabua.s.circ$p.no.circ
 
 ## Novo nqx = 1-npx
 tabua.s.circ$nqx.n=1-tabua.s.circ$npx.n
@@ -240,7 +240,7 @@ tabua.s.circ$ndx[12]<-tabua.s.circ$lx[12]
 
 ## Para os grupos de idade 0 a 9 e penultimo da tabua
 ## = n + p.sem.causa*(nqx/nqx.n)*(nax-n)
-tabua.s.circ$nax.n=tabua.s.circ$n+tabua.s.circ$p.no.circ*(tabua.masculina$nqx/tabua.s.circ$nqx.n)*(tabua.masculina$nax-tabua.s.circ$n)
+tabua.s.circ$nax.n=tabua.s.circ$n+tabua.s.circ$p.no.circ*(tabua.feminina$nqx/tabua.s.circ$nqx.n)*(tabua.feminina$nax-tabua.s.circ$n)
 
 ## Para os demais grupos com intervalo de 5 anos, assume-se que as mortes seguem uma funcao quadratica sobre os intervalos x-5 a x+10, assim:
 
@@ -248,7 +248,7 @@ tabua.s.circ$nax.n=tabua.s.circ$n+tabua.s.circ$p.no.circ*(tabua.masculina$nqx/ta
 for (i in 4:10){tabua.s.circ$nax.n[i]=((tabua.s.circ$ndx[i-1]*-5/24)+2.5*tabua.s.circ$ndx[i]+(tabua.s.circ$ndx[i+1]*5/24))/tabua.s.circ$ndx[i]}
 
 # para o ultimo grupo
-tabua.s.circ$nax.n[12]=tabua.masculina$ex[12]/tabua.s.circ$p.no.circ[12]
+tabua.s.circ$nax.n[12]=tabua.feminina$ex[12]/tabua.s.circ$p.no.circ[12]
 
 ## Estimando o pessoas-ano vivido da tabela de vida Lx
 ##Todos que viveram ate o fim do intervalo + aqueles que viveram certo tempo e morreram antes de completar a ultima idade do intervalo
@@ -274,7 +274,7 @@ p.no.exte
 tabua.s.exte=data.frame(cbind(idade,n,p.no.exte))
 
 ## Extraindo da probabilidade de sobrevivencia essa proporcao = px^proporcao
-tabua.s.exte$npx.n=tabua.masculina$npx^tabua.s.exte$p.no.exte
+tabua.s.exte$npx.n=tabua.feminina$npx^tabua.s.exte$p.no.exte
 
 ## Novo nqx = 1-npx
 tabua.s.exte$nqx.n=1-tabua.s.exte$npx.n
@@ -301,7 +301,7 @@ tabua.s.exte$ndx[12]<-tabua.s.exte$lx[12]
 
 ## Para os grupos de idade 0 a 9 e penultimo da tabua
 ## = n + p.sem.causa*(nqx/nqx.n)*(nax-n)
-tabua.s.exte$nax.n=tabua.s.exte$n+tabua.s.exte$p.no.exte*(tabua.masculina$nqx/tabua.s.exte$nqx.n)*(tabua.masculina$nax-tabua.s.exte$n)
+tabua.s.exte$nax.n=tabua.s.exte$n+tabua.s.exte$p.no.exte*(tabua.feminina$nqx/tabua.s.exte$nqx.n)*(tabua.feminina$nax-tabua.s.exte$n)
 
 ## Para os demais grupos com intervalo de 5 anos, assume-se que as mortes seguem uma funcao quadratica sobre os intervalos x-5 a x+10, assim:
 
@@ -309,7 +309,7 @@ tabua.s.exte$nax.n=tabua.s.exte$n+tabua.s.exte$p.no.exte*(tabua.masculina$nqx/ta
 for (i in 4:10){tabua.s.exte$nax.n[i]=((tabua.s.exte$ndx[i-1]*-5/24)+2.5*tabua.s.exte$ndx[i]+(tabua.s.exte$ndx[i+1]*5/24))/tabua.s.exte$ndx[i]}
 
 # para o ultimo grupo
-tabua.s.exte$nax.n[12]=tabua.masculina$ex[12]/tabua.s.exte$p.no.exte[12]
+tabua.s.exte$nax.n[12]=tabua.feminina$ex[12]/tabua.s.exte$p.no.exte[12]
 
 ## Estimando o pessoas-ano vivido da tabela de vida Lx
 ##Todos que viveram ate o fim do intervalo + aqueles que viveram certo tempo e morreram antes de completar a ultima idade do intervalo
@@ -335,7 +335,7 @@ p.no.outr
 tabua.s.outr=data.frame(cbind(idade,n,p.no.outr))
 
 ## Extraindo da probabilidade de sobrevivencia essa proporcao = px^proporcao
-tabua.s.outr$npx.n=tabua.masculina$npx^tabua.s.outr$p.no.outr
+tabua.s.outr$npx.n=tabua.feminina$npx^tabua.s.outr$p.no.outr
 
 ## Novo nqx = 1-npx
 tabua.s.outr$nqx.n=1-tabua.s.outr$npx.n
@@ -362,7 +362,7 @@ tabua.s.outr$ndx[12]<-tabua.s.outr$lx[12]
 
 ## Para os grupos de idade 0 a 9 e penultimo da tabua
 ## = n + p.sem.causa*(nqx/nqx.n)*(nax-n)
-tabua.s.outr$nax.n=tabua.s.outr$n+tabua.s.outr$p.no.outr*(tabua.masculina$nqx/tabua.s.outr$nqx.n)*(tabua.masculina$nax-tabua.s.outr$n)
+tabua.s.outr$nax.n=tabua.s.outr$n+tabua.s.outr$p.no.outr*(tabua.feminina$nqx/tabua.s.outr$nqx.n)*(tabua.feminina$nax-tabua.s.outr$n)
 
 ## Para os demais grupos com intervalo de 5 anos, assume-se que as mortes seguem uma funcao quadratica sobre os intervalos x-5 a x+10, assim:
 
@@ -370,7 +370,7 @@ tabua.s.outr$nax.n=tabua.s.outr$n+tabua.s.outr$p.no.outr*(tabua.masculina$nqx/ta
 for (i in 4:10){tabua.s.outr$nax.n[i]=((tabua.s.outr$ndx[i-1]*-5/24)+2.5*tabua.s.outr$ndx[i]+(tabua.s.outr$ndx[i+1]*5/24))/tabua.s.outr$ndx[i]}
 
 # para o ultimo grupo
-tabua.s.outr$nax.n[12]=tabua.masculina$ex[12]/tabua.s.outr$p.no.outr[12]
+tabua.s.outr$nax.n[12]=tabua.feminina$ex[12]/tabua.s.outr$p.no.outr[12]
 
 ## Estimando o pessoas-ano vivido da tabela de vida Lx
 ##Todos que viveram ate o fim do intervalo + aqueles que viveram certo tempo e morreram antes de completar a ultima idade do intervalo
@@ -386,6 +386,4 @@ tabua.s.outr$Tx<-(rev(cumsum(rev(tabua.s.outr$nLx))))
 
 ##Estimando a esperan?a de vida ex = Tx/lx
 tabua.s.outr$ex.n<-round(tabua.s.outr$Tx/tabua.s.outr$lx,digits=2)
-
-
 
