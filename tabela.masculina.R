@@ -411,14 +411,14 @@ tabua.s.infec.masc<-tabua.s.infec
 tabua.s.neo.masc<-tabua.s.neo
 tabua.s.outr.masc<-tabua.s.outr
 
-experanças<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.feminina$ex,
+experancas<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.feminina$ex,
                        tabua.s.infec.masc$ex.n,tabua.s.infec.fem$ex.n,
                        tabua.s.circ.masc$ex.n,tabua.s.circ.fem$ex.n,
                        tabua.s.neo.masc$ex.n,tabua.s.neo.fem$ex.n,
                        tabua.s.exte.masc$ex.n,tabua.s.exte.fem$ex.n,
                        tabua.s.outr.masc$ex.n,tabua.s.outr.fem$ex.n)
 
-experanças %>% 
+experancas %>% 
   gt(rowname_col = "todos.dados..Faixa.Etária.") %>% 
   tab_spanner(label = md("**Tabua normal**"),
               columns =c(tabua.masculina.ex,tabua.feminina.ex) ) %>% 
@@ -442,5 +442,7 @@ experanças %>%
   cols_align(align = "center") %>% 
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>%
   gtsave("esperanças.png")
+
+
 
              
