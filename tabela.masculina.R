@@ -444,5 +444,20 @@ experancas %>%
   gtsave("esperanças.png")
 
 
+tem.fem.mas<-data.frame(tabua.feminina$nMx,tabua.masculina$nMx)
+tem.fem.mas %>% 
+  gather(key = 'sexo', value = 'nMx') %>% 
+  mutate(idade =c(0,1,seq(5,20,5),seq(30,80,10),0,1,seq(5,20,5),seq(30,80,10))) %>% 
+  ggplot(aes(x=idade,y =nMx, group =sexo )) +
+  geom_line(aes(color=sexo))+
+  geom_point(aes(color=sexo))+
+  theme_minimal()+
+  theme(legend.position="bottom")+
+  scale_color_manual(labels = c("Feminino","Masculino"), values = c("#177e94","#7fdbdb"))+
+  labs(title = "Taxa Específica de Mortalidade",subtitle = "Rio grande do Norte, 2012"
+       ,x="Idade",color="Sexo")+
+  ggsave("grafico-nMx.png")
 
-             
+tem.masculinos<-data.frame()
+
+
