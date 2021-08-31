@@ -42,7 +42,7 @@ dados$nax[2]<-round(ifelse(dados$nMx[1]<0.107,1.651-2.816*dados$nMx[1],1.352), d
 
 
 ## Estimando as probabilidades de morte nqx
-for (i in 1:18){dados$nqx[i]<-(dados$n[i]*dados$nMx[i])/
+for (i in 1:11){dados$nqx[i]<-(dados$n[i]*dados$nMx[i])/
   ((1)+((dados$n[i]-dados$nax[i])*dados$nMx[i]))}
 
 
@@ -411,4 +411,28 @@ tabua.feminina %>%
 
 
 
-
+#grafico lx----
+lx.fem<-data.frame(tabua.feminina$lx,tabua.s.infec.fem$lx,tabua.s.neo.fem$lx,
+                   tabua.s.circ.fem$lx,tabua.s.exte.fem$lx,tabua.s.outr.fem$lx
+                   )
+lx.fem<-lx.fem %>% 
+  gather(key='LX',value = 'lx') %>% 
+  mutate(Idade=c(rep((c(0,1,seq(5,20,5),seq(30,80,10))),6))) 
+lx.fem %>% 
+  ggplot(aes(x=Idade, y=lx, group = LX,color=LX,size=LX)) +
+  geom_line(aes(linetype = LX))+
+  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
+  scale_size_manual(values = c(2.5,rep(0.5,5)))+
+  scale_color_manual(labels = c("lx","lx Circulatório",
+                                "lx Causa Externa","lx Infecção",
+                                "lx Neoplasia","lx Outras Causas"), 
+                     values = c("firebrick3","gray",
+                                "peru","paleturquoise4","royalblue2",
+                                "blue4"))+
+  labs(title = "Mulheres Sobrevivêntes à idade exata x",
+       subtitle = "Rio Grande do Norte 2012",
+       x="Idade",
+       y="lx",
+       caption = "Fonte: Censo Demográfico 2012", color = "")+
+  theme_minimal()+theme(legend.position="bottom")
+ 

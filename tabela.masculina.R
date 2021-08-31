@@ -42,7 +42,7 @@ dados$nax[2]<-round(ifelse(dados$nMx[1]<0.107,1.651-2.816*dados$nMx[1],1.352), d
 
 
 ## Estimando as probabilidades de morte nqx
-for (i in 1:18){dados$nqx[i]<-(dados$n[i]*dados$nMx[i])/
+for (i in 1:11){dados$nqx[i]<-(dados$n[i]*dados$nMx[i])/
   ((1)+((dados$n[i]-dados$nax[i])*dados$nMx[i]))}
 
 
@@ -411,12 +411,15 @@ tabua.s.infec.masc<-tabua.s.infec
 tabua.s.neo.masc<-tabua.s.neo
 tabua.s.outr.masc<-tabua.s.outr
 
+#esperanças----
 experancas<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.feminina$ex,
                        tabua.s.infec.masc$ex.n,tabua.s.infec.fem$ex.n,
                        tabua.s.circ.masc$ex.n,tabua.s.circ.fem$ex.n,
                        tabua.s.neo.masc$ex.n,tabua.s.neo.fem$ex.n,
                        tabua.s.exte.masc$ex.n,tabua.s.exte.fem$ex.n,
                        tabua.s.outr.masc$ex.n,tabua.s.outr.fem$ex.n)
+
+
 
 experancas %>% 
   gt(rowname_col = "todos.dados..Faixa.Etária.") %>% 
@@ -443,7 +446,7 @@ experancas %>%
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>%
   gtsave("esperanças.png")
 
-
+#tem masc e fem----
 tem.fem.mas<-data.frame(tabua.feminina$nMx,tabua.masculina$nMx)
 tem.fem.mas %>% 
   gather(key = 'sexo', value = 'nMx') %>% 
@@ -458,6 +461,28 @@ tem.fem.mas %>%
        ,x="Idade",color="Sexo")+
   ggsave("grafico-nMx.png")
 
-tem.masculinos<-data.frame()
 
-
+#grafico lx----
+lx.masc<-data.frame(tabua.masculina$lx,tabua.s.infec.masc$lx,tabua.s.neo.masc$lx,
+                   tabua.s.circ.masc$lx,tabua.s.exte.masc$lx,tabua.s.outr.masc$lx
+)
+lx.mas<-lx.masc %>% 
+  gather(key='LX',value = 'lx') %>% 
+  mutate(Idade=c(rep((c(0,1,seq(5,20,5),seq(30,80,10))),6))) 
+lx.mas %>% 
+  ggplot(aes(x=Idade, y=lx, group = LX,color=LX,size=LX)) +
+  geom_line(aes(linetype = LX))+
+  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
+  scale_size_manual(values = c(2.5,rep(0.5,5)))+
+  scale_color_manual(labels = c("lx","lx Circulatório",
+                                "lx Causa Externa","lx Infecção",
+                                "lx Neoplasia","lx Outras Causas"), 
+                     values = c("firebrick3","gray",
+                                "peru","paleturquoise4","royalblue2",
+                                "blue4"))+
+  labs(title = "Homens Sobrevivêntes à idade exata x",
+       subtitle = "Rio Grande do Norte 2012",
+       x="Idade",
+       y="lx",
+       caption = "Fonte: Censo Demográfico 2012", color = "")+
+  theme_minimal()+theme(legend.position="bottom")
