@@ -404,7 +404,7 @@ tabua.feminina %>%
              nMx=md("**nMx**"),nax=md('**nax**'),
              nqx=md("**nqx**"),npx=md('**npx**'),lx=md("**lx**"),ndx=md("**ndx**"),
              nLx=md("**nLx**"),Tx=md("**TX**"),ex=md("**Ex**")) %>% 
-  tab_header(title = md("**Tabua de vida Feminina**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  tab_header(title = md("**Tabua de vida Feminina**"), subtitle = "Rio Grande do Norte, 2012") %>% 
   cols_align(align = "center") %>% 
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
   gtsave("tabua.feminina.png")
@@ -423,9 +423,9 @@ lx.fem %>%
   geom_line(aes(linetype = LX))+
   scale_linetype_manual(values=c("dotted", rep("solid",5)))+
   scale_size_manual(values = c(2.5,rep(0.5,5)))+
-  scale_color_manual(labels = c("lx","lx Circulatório",
-                                "lx Causa Externa","lx Infecção",
-                                "lx Neoplasia","lx Outras Causas"), 
+  scale_color_manual(labels = c("lx (todas as causas)","lx (sem Circulatório)",
+                                "lx (sem Causa Externa)","lx (sem Infecção)",
+                                "lx (sem Neoplasia)","lx (sem Outras Causas)"), 
                      values = c("firebrick3","gray",
                                 "peru","paleturquoise4","royalblue2",
                                 "blue4"))+
@@ -436,3 +436,46 @@ lx.fem %>%
        caption = "Fonte: Censo Demográfico 2012", color = "")+
   theme_minimal()+theme(legend.position="bottom")
  
+
+
+
+#grafico nqx-----
+
+nqx.fem<-data.frame(tabua.feminina$nqx,tabua.s.infec.fem$nqx.n,
+                     tabua.s.neo.fem$nqx.n,tabua.s.circ.fem$nqx.n,
+                     tabua.s.exte.fem$nqx.n,tabua.s.outr.fem$nqx.n)
+
+nqx.fem<-nqx.fem %>% 
+  gather(key='nqx',value = 'value') %>% 
+  mutate(Idade=c(rep((c(0,1,seq(5,20,5),seq(30,80,10))),6))) 
+
+nqx.fem %>% 
+  ggplot(aes(x=Idade, y=log(value), group=nqx))+
+  geom_line(aes(color=nqx, size = nqx,linetype=nqx))+
+  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
+  scale_size_manual(values = c(2,rep(0.5,5)))+
+  scale_color_manual(labels = c("nqx (todas as causas)","nqx (sem Circulatório)",
+                                "nqx (sem Causa Externa)","nqx (sem Infecção)",
+                                "nqx (sem Neoplasia)","nqx (sem Outras Causas)"), 
+                     values = c("firebrick3","gray",
+                                "peru","paleturquoise4","royalblue2",
+                                "blue4"))+
+  labs(title = "Probabilidade de morte entre mulheres",
+       subtitle = "Rio Grande do Norte 2012",
+       x="Idade",
+       y="nqx",
+       caption = "Fonte: Censo Demográfico 2012", color = "")+
+  theme_minimal()+theme(legend.position="bottom")
+
+
+
+#ganhos na expec-----
+ganho.exp.fem<-data.frame(
+  infeccao = tabua.s.infec.fem$ex.n-tabua.feminina$ex,
+  neoplasia=tabua.s.neo.fem$ex.n-tabua.feminina$ex,
+  circulatorio=tabua.s.circ.fem$ex.n-tabua.feminina$ex,
+  causas_externas=tabua.s.exte.fem$ex.n-tabua.feminina$ex,
+  outras=tabua.s.outr.fem$ex.n-tabua.feminina$ex)
+
+
+

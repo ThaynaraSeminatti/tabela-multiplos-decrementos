@@ -398,7 +398,7 @@ tabua.masculina %>%
              nMx=md("**nMx**"),nax=md('**nax**'),
              nqx=md("**nqx**"),npx=md('**npx**'),lx=md("**lx**"),ndx=md("**ndx**"),
              nLx=md("**nLx**"),Tx=md("**TX**"),ex=md("**Ex**")) %>% 
-  tab_header(title = md("**Tabua de vida Masculina**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  tab_header(title = md("**Tabua de vida Masculina**"), subtitle = "Rio Grande do Norte, 2012") %>% 
   cols_align(align = "center") %>% 
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
   gtsave("tabua.masclina.png")#para salvar
@@ -441,7 +441,7 @@ experancas %>%
              tabua.s.neo.masc.ex.n="Masc",tabua.s.neo.fem.ex.n="Fem",
              tabua.s.exte.masc.ex.n="Masc",tabua.s.exte.fem.ex.n="Fem",
              tabua.s.outr.masc.ex.n="Masc",tabua.s.outr.fem.ex.n="Fem") %>%  
-  tab_header(title = md("**Esperanças de vida comparadas**"), subtitle = "Rio grande do Norte, 2012") %>% 
+  tab_header(title = md("**Esperanças de vida comparadas**"), subtitle = "Rio Grande do Norte, 2012") %>% 
   cols_align(align = "center") %>% 
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>%
   gtsave("esperanças.png")
@@ -451,14 +451,14 @@ tem.fem.mas<-data.frame(tabua.feminina$nMx,tabua.masculina$nMx)
 tem.fem.mas %>% 
   gather(key = 'sexo', value = 'nMx') %>% 
   mutate(idade =c(0,1,seq(5,20,5),seq(30,80,10),0,1,seq(5,20,5),seq(30,80,10))) %>% 
-  ggplot(aes(x=idade,y =nMx, group =sexo )) +
+  ggplot(aes(x=idade,y =log(nMx), group =sexo )) +
   geom_line(aes(color=sexo))+
   geom_point(aes(color=sexo))+
   theme_minimal()+
   theme(legend.position="bottom")+
   scale_color_manual(labels = c("Feminino","Masculino"), values = c("#177e94","#7fdbdb"))+
-  labs(title = "Taxa Específica de Mortalidade",subtitle = "Rio grande do Norte, 2012"
-       ,x="Idade",color="Sexo")+
+  labs(title = "Taxa Específica de Mortalidade",subtitle = "Rio Grande do Norte, 2012"
+       ,x="Idade",color="Sexo", y="nMX")+
   ggsave("grafico-nMx.png")
 
 
@@ -474,9 +474,9 @@ lx.mas %>%
   geom_line(aes(linetype = LX))+
   scale_linetype_manual(values=c("dotted", rep("solid",5)))+
   scale_size_manual(values = c(2.5,rep(0.5,5)))+
-  scale_color_manual(labels = c("lx","lx Circulatório",
-                                "lx Causa Externa","lx Infecção",
-                                "lx Neoplasia","lx Outras Causas"), 
+  scale_color_manual(labels = c("lx (todas as causas)","lx (sem Circulatório)",
+                                "lx (sem Causa Externa)","lx (sem Infecção)",
+                                "lx (sem Neoplasia)","lx (sem Outras Causas)"), 
                      values = c("firebrick3","gray",
                                 "peru","paleturquoise4","royalblue2",
                                 "blue4"))+
@@ -486,3 +486,76 @@ lx.mas %>%
        y="lx",
        caption = "Fonte: Censo Demográfico 2012", color = "")+
   theme_minimal()+theme(legend.position="bottom")
+
+
+#grafixo nqx ----
+
+nqx.masc<-data.frame(tabua.masculina$nqx,tabua.s.infec.masc$nqx.n,
+                    tabua.s.neo.masc$nqx.n,tabua.s.circ.masc$nqx.n,
+                    tabua.s.exte.masc$nqx.n,tabua.s.outr.masc$nqx.n)
+
+nqx.masc<-nqx.masc %>% 
+  gather(key='nqx',value = 'value') %>% 
+  mutate(Idade=c(rep((c(0,1,seq(5,20,5),seq(30,80,10))),6))) 
+
+
+nqx.masc %>% 
+  ggplot(aes(x=Idade, y=log(value), group=nqx))+
+  geom_line(aes(color=nqx, size = nqx,linetype=nqx))+
+  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
+  scale_size_manual(values = c(2,rep(0.5,5)))+
+  scale_color_manual(labels = c("nqx (todas as causas)","nqx (sem Circulatório)",
+                                "nqx (sem Causa Externa)","nqx (sem Infecção)",
+                                "nqx (sem Neoplasia)","nqx (sem Outras Causas)"), 
+                     values = c("firebrick3","gray",
+                                "peru","paleturquoise4","royalblue2",
+                                "blue4"))+
+  labs(title = "Probabilidade de morte entre homens",
+       subtitle = "Rio Grande do Norte 2012",
+       x="Idade",
+       y="nqx",
+       caption = "Fonte: Censo Demográfico 2012", color = "")+
+  theme_minimal()+theme(legend.position="bottom")
+
+
+
+#ganhos na expec-----
+ganho.exp.masc<-data.frame(
+  infeccao = tabua.s.infec.masc$ex.n-tabua.masculina$ex,
+  neoplasia=tabua.s.neo.masc$ex.n-tabua.masculina$ex,
+  circulatorio=tabua.s.circ.masc$ex.n-tabua.masculina$ex,
+  causas_externas=tabua.s.exte.masc$ex.n-tabua.masculina$ex,
+  outras=tabua.s.outr.masc$ex.n-tabua.masculina$ex)
+
+
+
+#os dois juntos----
+ganho.exp.fem.mas<-data.frame(
+  idade=c(0,1,seq(5,20,5),seq(30,80,10)),
+  infeccao.f = tabua.s.infec.fem$ex.n-tabua.feminina$ex,
+  neoplasia.f=tabua.s.neo.fem$ex.n-tabua.feminina$ex,
+  circulatorio.f=tabua.s.circ.fem$ex.n-tabua.feminina$ex,
+  causas_externas.f=tabua.s.exte.fem$ex.n-tabua.feminina$ex,
+  outras.f=tabua.s.outr.fem$ex.n-tabua.feminina$ex,
+  infeccao.m = tabua.s.infec.masc$ex.n-tabua.masculina$ex,
+  neoplasia.m=tabua.s.neo.masc$ex.n-tabua.masculina$ex,
+  circulatorio.m=tabua.s.circ.masc$ex.n-tabua.masculina$ex,
+  causas_externas.m=tabua.s.exte.masc$ex.n-tabua.masculina$ex,
+  outras.m=tabua.s.outr.masc$ex.n-tabua.masculina$ex)
+
+ganho.exp.fem.mas %>% 
+  gt() %>% 
+  tab_spanner(label = md("**Infecção**"), columns = c(infeccao.f,infeccao.m))%>% 
+  tab_spanner(label = md("**Neoplasia**"), columns = c(neoplasia.f,neoplasia.m))%>% 
+  tab_spanner(label = md("**Circulatório**"), columns = c(circulatorio.f,circulatorio.m))%>% 
+  tab_spanner(label = md("**Causas Externas**"), columns = c(causas_externas.f,causas_externas.m))%>% 
+  tab_spanner(label = md("**Outras**"), columns = c(outras.f,outras.m)) %>% 
+  cols_label(infeccao.f=md("**Feminino**"),infeccao.m=md("**Masculino**"),
+             neoplasia.f=md("**Feminino**"),neoplasia.m=md("**Masculino**"),
+             circulatorio.f=md("**Feminino**"),circulatorio.m=md("**Masculino**"),
+             causas_externas.f=md("**Feminino**"),causas_externas.m=md("**Masculino**"),
+             outras.f=md("**Feminino**"),outras.m=md("**Masculino**"),
+             idade=md("**Idade**")) %>% 
+  tab_header(title = "Ganhos(em anos) de Vida por Causa Eliminada",
+             subtitle = "Rio Grande do Norte 2012") %>% 
+  tab_source_note(source_note = "Fonte: Censo Demográfico 2012")
