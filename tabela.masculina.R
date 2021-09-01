@@ -387,6 +387,13 @@ tabua.s.outr$Tx<-(rev(cumsum(rev(tabua.s.outr$nLx))))
 ##Estimando a esperan?a de vida ex = Tx/lx
 tabua.s.outr$ex.n<-round(tabua.s.outr$Tx/tabua.s.outr$lx,digits=2)
 
+#tabelas
+tabua.s.circ.masc<-tabua.s.circ
+tabua.s.exte.masc<-tabua.s.exte
+tabua.s.infec.masc<-tabua.s.infec
+tabua.s.neo.masc<-tabua.s.neo
+tabua.s.outr.masc<-tabua.s.outr
+
 #tabua masculina
 tabua.masculina %>%
   mutate(nMx=nMx*100) %>% 
@@ -401,15 +408,10 @@ tabua.masculina %>%
   tab_header(title = md("**Tabua de vida Masculina**"), subtitle = "Rio Grande do Norte, 2012") %>% 
   cols_align(align = "center") %>% 
   tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
-  gtsave("tabua.masclina.png")#para salvar
+  gtsave("tabua.masculina.png")#para salvar
 
 
-#tabelas
-tabua.s.circ.masc<-tabua.s.circ
-tabua.s.exte.masc<-tabua.s.exte
-tabua.s.infec.masc<-tabua.s.infec
-tabua.s.neo.masc<-tabua.s.neo
-tabua.s.outr.masc<-tabua.s.outr
+
 
 #esperanças----
 experancas<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.feminina$ex,
@@ -423,17 +425,17 @@ experancas<-data.frame(todos.dados$`Faixa Etária`,tabua.masculina$ex,tabua.femi
 
 experancas %>% 
   gt(rowname_col = "todos.dados..Faixa.Etária.") %>% 
-  tab_spanner(label = md("**Tabua normal**"),
+  tab_spanner(label = md("**Todas as Causas**"),
               columns =c(tabua.masculina.ex,tabua.feminina.ex) ) %>% 
-  tab_spanner(label = md("**Tabua Infecção**"),
+  tab_spanner(label = md("**Sem Infecção**"),
               columns = c(tabua.s.infec.masc.ex.n,tabua.s.infec.fem.ex.n)) %>% 
-  tab_spanner(label = md("**Apar. Circulatório**"),
+  tab_spanner(label = md("**Sem Apar. Circulatório**"),
               columns = c(tabua.s.circ.masc.ex.n,tabua.s.circ.fem.ex.n)) %>% 
-  tab_spanner(label = md("**Causas Externas**"),
+  tab_spanner(label = md("**Sem Causas Externas**"),
               columns = c(tabua.s.exte.masc.ex.n,tabua.s.exte.fem.ex.n)) %>% 
-  tab_spanner(label = md("**Neoplasia**"),
+  tab_spanner(label = md("**Sem Neoplasia**"),
             columns = c(tabua.s.neo.masc.ex.n,tabua.s.neo.fem.ex.n)) %>% 
-  tab_spanner(label = md("**Outras**"),
+  tab_spanner(label = md("**Sem Outras Causas**"),
               columns = c(tabua.s.outr.masc.ex.n,tabua.s.outr.fem.ex.n)) %>% 
   cols_label(tabua.masculina.ex="Masc",tabua.feminina.ex="Fem",
              tabua.s.infec.masc.ex.n="Masc",tabua.s.infec.fem.ex.n="Fem",
@@ -458,8 +460,7 @@ tem.fem.mas %>%
   theme(legend.position="bottom")+
   scale_color_manual(labels = c("Feminino","Masculino"), values = c("#177e94","#7fdbdb"))+
   labs(title = "Taxa Específica de Mortalidade",subtitle = "Rio Grande do Norte, 2012"
-       ,x="Idade",color="Sexo", y="nMX")+
-  ggsave("grafico-nMx.png")
+       ,x="Idade",color="Sexo", y="nMX",caption = "FONTE: Censo Demográfico 2012")
 
 
 #grafico lx----
@@ -472,14 +473,14 @@ lx.mas<-lx.masc %>%
 lx.mas %>% 
   ggplot(aes(x=Idade, y=lx, group = LX,color=LX,size=LX)) +
   geom_line(aes(linetype = LX))+
-  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
-  scale_size_manual(values = c(2.5,rep(0.5,5)))+
   scale_color_manual(labels = c("lx (todas as causas)","lx (sem Circulatório)",
                                 "lx (sem Causa Externa)","lx (sem Infecção)",
                                 "lx (sem Neoplasia)","lx (sem Outras Causas)"), 
                      values = c("firebrick3","gray",
                                 "peru","paleturquoise4","royalblue2",
                                 "blue4"))+
+  scale_size_manual(values = c(2.5,rep(0.5,5)))+
+  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
   labs(title = "Homens Sobrevivêntes à idade exata x",
        subtitle = "Rio Grande do Norte 2012",
        x="Idade",
@@ -490,9 +491,12 @@ lx.mas %>%
 
 #grafixo nqx ----
 
-nqx.masc<-data.frame(tabua.masculina$nqx,tabua.s.infec.masc$nqx.n,
-                    tabua.s.neo.masc$nqx.n,tabua.s.circ.masc$nqx.n,
-                    tabua.s.exte.masc$nqx.n,tabua.s.outr.masc$nqx.n)
+nqx.masc<-data.frame(todos=tabua.masculina$nqx,
+                     infec=tabua.s.infec.masc$nqx.n,
+                    neo=tabua.s.neo.masc$nqx.n,
+                    circ=tabua.s.circ.masc$nqx.n,
+                    exte=tabua.s.exte.masc$nqx.n,
+                    outra=tabua.s.outr.masc$nqx.n)
 
 nqx.masc<-nqx.masc %>% 
   gather(key='nqx',value = 'value') %>% 
@@ -502,14 +506,14 @@ nqx.masc<-nqx.masc %>%
 nqx.masc %>% 
   ggplot(aes(x=Idade, y=log(value), group=nqx))+
   geom_line(aes(color=nqx, size = nqx,linetype=nqx))+
-  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
-  scale_size_manual(values = c(2,rep(0.5,5)))+
-  scale_color_manual(labels = c("nqx (todas as causas)","nqx (sem Circulatório)",
-                                "nqx (sem Causa Externa)","nqx (sem Infecção)",
+  scale_linetype_manual(values=c(rep("solid",5),"dotted"))+
+  scale_size_manual(values = c(rep(0.5,5),2))+
+  scale_color_manual(labels = c("nqx (sem Circulatório)","nqx (sem Causa Externa)",
+                                "nqx (todas as causas)","nqx (sem Infecção)",
                                 "nqx (sem Neoplasia)","nqx (sem Outras Causas)"), 
-                     values = c("firebrick3","gray",
+                     values = c("gray",
                                 "peru","paleturquoise4","royalblue2",
-                                "blue4"))+
+                                "blue4","firebrick3"))+
   labs(title = "Probabilidade de morte entre homens",
        subtitle = "Rio Grande do Norte 2012",
        x="Idade",
@@ -531,7 +535,7 @@ ganho.exp.masc<-data.frame(
 
 #os dois juntos----
 ganho.exp.fem.mas<-data.frame(
-  idade=c(0,1,seq(5,20,5),seq(30,80,10)),
+  idade=todos.dados$`Faixa Etária`,
   infeccao.f = tabua.s.infec.fem$ex.n-tabua.feminina$ex,
   neoplasia.f=tabua.s.neo.fem$ex.n-tabua.feminina$ex,
   circulatorio.f=tabua.s.circ.fem$ex.n-tabua.feminina$ex,
@@ -544,7 +548,7 @@ ganho.exp.fem.mas<-data.frame(
   outras.m=tabua.s.outr.masc$ex.n-tabua.masculina$ex)
 
 ganho.exp.fem.mas %>% 
-  gt() %>% 
+  gt(rowname_col = "idade") %>% 
   tab_spanner(label = md("**Infecção**"), columns = c(infeccao.f,infeccao.m))%>% 
   tab_spanner(label = md("**Neoplasia**"), columns = c(neoplasia.f,neoplasia.m))%>% 
   tab_spanner(label = md("**Circulatório**"), columns = c(circulatorio.f,circulatorio.m))%>% 
@@ -554,8 +558,8 @@ ganho.exp.fem.mas %>%
              neoplasia.f=md("**Feminino**"),neoplasia.m=md("**Masculino**"),
              circulatorio.f=md("**Feminino**"),circulatorio.m=md("**Masculino**"),
              causas_externas.f=md("**Feminino**"),causas_externas.m=md("**Masculino**"),
-             outras.f=md("**Feminino**"),outras.m=md("**Masculino**"),
-             idade=md("**Idade**")) %>% 
+             outras.f=md("**Feminino**"),outras.m=md("**Masculino**")) %>% 
   tab_header(title = "Ganhos(em anos) de Vida por Causa Eliminada",
              subtitle = "Rio Grande do Norte 2012") %>% 
-  tab_source_note(source_note = "Fonte: Censo Demográfico 2012")
+  tab_source_note(source_note = "Fonte: Censo Demográfico 2012") %>% 
+  gtsave("ganhos-masc-fem.png")

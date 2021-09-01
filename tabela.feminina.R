@@ -441,9 +441,12 @@ lx.fem %>%
 
 #grafico nqx-----
 
-nqx.fem<-data.frame(tabua.feminina$nqx,tabua.s.infec.fem$nqx.n,
-                     tabua.s.neo.fem$nqx.n,tabua.s.circ.fem$nqx.n,
-                     tabua.s.exte.fem$nqx.n,tabua.s.outr.fem$nqx.n)
+nqx.fem<-data.frame(todos=tabua.feminina$nqx,
+                    infe=tabua.s.infec.fem$nqx.n,
+                    neo= tabua.s.neo.fem$nqx.n,
+                    circ=tabua.s.circ.fem$nqx.n,
+                    exte=tabua.s.exte.fem$nqx.n,
+                    outra=tabua.s.outr.fem$nqx.n)
 
 nqx.fem<-nqx.fem %>% 
   gather(key='nqx',value = 'value') %>% 
@@ -452,14 +455,14 @@ nqx.fem<-nqx.fem %>%
 nqx.fem %>% 
   ggplot(aes(x=Idade, y=log(value), group=nqx))+
   geom_line(aes(color=nqx, size = nqx,linetype=nqx))+
-  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
-  scale_size_manual(values = c(2,rep(0.5,5)))+
-  scale_color_manual(labels = c("nqx (todas as causas)","nqx (sem Circulatório)",
-                                "nqx (sem Causa Externa)","nqx (sem Infecção)",
+  scale_linetype_manual(values=c(rep("solid",5),"dotted"))+
+  scale_size_manual(values = c(rep(0.5,5),2))+
+  scale_color_manual(labels = c("nqx (sem Circulatório)","nqx (sem Causa Externa)",
+                                "nqx (todas as causas)","nqx (sem Infecção)",
                                 "nqx (sem Neoplasia)","nqx (sem Outras Causas)"), 
-                     values = c("firebrick3","gray",
+                     values = c("gray",
                                 "peru","paleturquoise4","royalblue2",
-                                "blue4"))+
+                                "blue4","firebrick3"))+
   labs(title = "Probabilidade de morte entre mulheres",
        subtitle = "Rio Grande do Norte 2012",
        x="Idade",
@@ -469,7 +472,7 @@ nqx.fem %>%
 
 
 
-#ganhos na expec-----
+ #ganhos na expec-----
 ganho.exp.fem<-data.frame(
   infeccao = tabua.s.infec.fem$ex.n-tabua.feminina$ex,
   neoplasia=tabua.s.neo.fem$ex.n-tabua.feminina$ex,
