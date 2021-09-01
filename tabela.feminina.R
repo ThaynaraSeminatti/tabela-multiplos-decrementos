@@ -412,8 +412,12 @@ tabua.feminina %>%
 
 
 #grafico lx----
-lx.fem<-data.frame(tabua.feminina$lx,tabua.s.infec.fem$lx,tabua.s.neo.fem$lx,
-                   tabua.s.circ.fem$lx,tabua.s.exte.fem$lx,tabua.s.outr.fem$lx
+lx.fem<-data.frame(todos=tabua.feminina$lx,
+                   infec=tabua.s.infec.fem$lx,
+                   neo=tabua.s.neo.fem$lx,
+                   circ=tabua.s.circ.fem$lx,
+                   ext=tabua.s.exte.fem$lx,
+                   outros=tabua.s.outr.fem$lx
                    )
 lx.fem<-lx.fem %>% 
   gather(key='LX',value = 'lx') %>% 
@@ -421,14 +425,14 @@ lx.fem<-lx.fem %>%
 lx.fem %>% 
   ggplot(aes(x=Idade, y=lx, group = LX,color=LX,size=LX)) +
   geom_line(aes(linetype = LX))+
-  scale_linetype_manual(values=c("dotted", rep("solid",5)))+
-  scale_size_manual(values = c(2.5,rep(0.5,5)))+
-  scale_color_manual(labels = c("lx (todas as causas)","lx (sem Circulatório)",
-                                "lx (sem Causa Externa)","lx (sem Infecção)",
-                                "lx (sem Neoplasia)","lx (sem Outras Causas)"), 
-                     values = c("firebrick3","gray",
+  scale_color_manual(labels = c("lx (sem Circulatório)","lx (sem Causas Externas)",
+                                "lx (sem Infecção)","lx (sem Neoplasia)",
+                                "lx (sem Outras causas)","lx Todas as Causas"), 
+                     values = c("gray",
                                 "peru","paleturquoise4","royalblue2",
-                                "blue4"))+
+                                "blue4","firebrick3"))+
+  scale_size_manual(values = c(rep(0.5,5),2.5))+
+  scale_linetype_manual(values=c( rep("solid",5),"dotted"))+
   labs(title = "Mulheres Sobrevivêntes à idade exata x",
        subtitle = "Rio Grande do Norte 2012",
        x="Idade",
@@ -456,10 +460,10 @@ nqx.fem %>%
   ggplot(aes(x=Idade, y=log(value), group=nqx))+
   geom_line(aes(color=nqx, size = nqx,linetype=nqx))+
   scale_linetype_manual(values=c(rep("solid",5),"dotted"))+
-  scale_size_manual(values = c(rep(0.5,5),2))+
+  scale_size_manual(values = c(rep(0.75,5),2))+
   scale_color_manual(labels = c("nqx (sem Circulatório)","nqx (sem Causa Externa)",
-                                "nqx (todas as causas)","nqx (sem Infecção)",
-                                "nqx (sem Neoplasia)","nqx (sem Outras Causas)"), 
+                                "nqx (sem Infecção) ","nqx (sem Neoplasia)",
+                                "nqx (sem Outras Causas)","nqx (todas as causas)"), 
                      values = c("gray",
                                 "peru","paleturquoise4","royalblue2",
                                 "blue4","firebrick3"))+
@@ -480,5 +484,33 @@ ganho.exp.fem<-data.frame(
   causas_externas=tabua.s.exte.fem$ex.n-tabua.feminina$ex,
   outras=tabua.s.outr.fem$ex.n-tabua.feminina$ex)
 
+#tem feminino----
+tem.fem<-data.frame(todos=todos.dados$total/todos.dados$pop.resi,
+                     infec=todos.dados$Infecção/todos.dados$pop.resi,
+                     neo=todos.dados$neoplasmas/todos.dados$pop.resi,
+                     circ=todos.dados$aparelho.circu/todos.dados$pop.resi,
+                     exte=todos.dados$causas.externas/todos.dados$pop.resi,
+                     outra=todos.dados$Outras.causas/todos.dados$pop.resi)
+tem.fem<-tem.fem %>%
+  gather(key='causas',value='tem') %>% 
+  mutate(idade=c(rep((c(0,1,seq(5,20,5),seq(30,80,10))),6)))
 
+tem.fem %>% 
+  ggplot(aes(x=idade,y=log(tem),group=causas)) +
+  geom_line(aes(color=causas,linetype=causas,size=causas))+
+  ylim(-12,4)+
+  scale_linetype_manual(values=c(rep("solid",5),"dotted"))+
+  scale_size_manual(values = c(rep(1,5),2))+
+  scale_color_manual(labels = c("TEM (sem Circulatório)","TEM (sem Causa Externa)",
+                                "TEM (sem Infecção) ","TEM (sem Neoplasia)",
+                                "TEM (sem Outras Causas)","TEM (todas as causas)"), 
+                     values = c("gray",
+                                "peru","paleturquoise4","royalblue2",
+                                "blue4","firebrick3"))+
+  labs(title = "Taxa Específica de Mortalidade - Feminino",
+       subtitle = "Rio Grande do Norte 2012",
+       x="Idade",
+       y="TEM",
+       caption = "Fonte: Censo Demográfico 2012", color = "")+
+  theme_minimal()+theme(legend.position="bottom")
 
